@@ -1,0 +1,24 @@
+---
+lvm_vg_name: datavg
+fs_type: xfs
+fstab_dump: "0"
+fstab_passno: "0"
+
+disks_table:
+  - /dev/sdb
+  - /dev/sdc
+  - /dev/sdd
+  - /dev/sde
+  - /dev/sdf
+  - /dev/sdg
+  - /dev/sdh
+  - /dev/sdi
+  - /dev/sdj
+  - /dev/sdk
+  - /dev/sdl
+  - /dev/sdm
+  - /dev/sdn
+  - /dev/sdo
+  - /dev/sdp
+
+lvm_disks: "{{ disks_table[:data_disks|length] }}"

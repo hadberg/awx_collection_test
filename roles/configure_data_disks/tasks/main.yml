@@ -1,0 +1,40 @@
+---
+- name: LVM | Create volume group
+  become: yes
+  lvg:
+    vg: "{{ lvm_vg_name }}"
+    pvs: "{{ lvm_disks }}"
+    state: present
+
+- name: LVM | Create logical volume
+  become: yes
+  lvol:
+    vg: "{{ lvm_vg_name }}"
+    lv: "{{ lvm_vg_name }}lv{{ ansible_loop.index }}"
+    pvs: "{{ lvm_disks[ansible_loop.index -1] }}"
+    size: "{{ item.size * 1024 -4 }}M"
+  loop: "{{ data_disks }}"
+  loop_control:
+    extended: true
+
+- name: Filesystem | Create filesystem
+  become: yes
+  filesystem:
+    fstype: "{{ fs_type }}"
+    dev: "/dev/{{ lvm_vg_name }}/{{ lvm_vg_name }}lv{{ ansible_loop.index }}"
+  loop: "{{ data_disks }}"
+  loop_control:
+    extended: true
+
+- name: Filesystem | Mount filesystem through fstab
+  become: yes
+  mount:
+    name: "{{ item.mountPoint }}"
+    src: "/dev/mapper/{{ lvm_vg_name }}-{{ lvm_vg_name }}lv{{ ansible_loop.index }}"
+    dump: "{{ fstab_dump }}"
+    passno: "{{ fstab_passno }}"
+    fstype: "{{ fs_type }}"
+    state: mounted
+  loop: "{{ data_disks }}"
+  loop_control:
+    extended: true

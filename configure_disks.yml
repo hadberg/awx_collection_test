@@ -1,0 +1,8 @@
+---
+- name: Disk configuration
+  hosts: all
+  tasks:
+    - name: Activate services | Hopefully I can trigger some error here with a very long comment that really in my opinion should be much much shorter
+      ansible.builtin.include_role:
+        name: configure_data_disks
+      when: data_disks | length > 0
